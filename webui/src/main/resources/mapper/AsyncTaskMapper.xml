@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.cronx.web.mapper.AsyncTaskMapper">
+
+    <resultMap id="AsyncTaskDO" type="io.cronx.web.model.entity.AsyncTaskDO">
+        <result column="id" property="id"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="task_name" property="taskName"/>
+        <result column="task_desc" property="taskDesc"/>
+        <result column="task_status" property="taskStatus"
+                javaType="io.cronx.async.task.framework.constant.AsyncTaskStatus"/>
+        <result column="life_cycle_state" property="lifeCycleState"
+                javaType="io.cronx.web.model.enumeration.LifeCycleState"/>
+        <result column="job_id" property="jobId"/>
+        <result column="exec_order" property="execOrder"/>
+        <result column="error_msg" property="errorMsg"/>
+        <result column="task_result" property="taskResult"/>
+    </resultMap>
+
+    <sql id="allColumn">
+        async_task.id id,
+        async_task.gmt_create gmt_create,
+        async_task.gmt_modified gmt_modified,
+        async_task.task_name task_name,
+        async_task.task_desc task_desc,
+        async_task.task_status task_status,
+        async_task.life_cycle_state life_cycle_state,
+        async_task.job_id job_id,
+        async_task.exec_order exec_order,
+        async_task.error_msg error_msg,
+        async_task.task_result task_result
+    </sql>
+
+    <insert id="batchInsertTask" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            async_task (task_name,task_desc,task_status,life_cycle_state,job_id,exec_order)
+        VALUES
+            <foreach collection="tasks" item="task" separator=",">
+                (#{task.taskName},#{task.taskDesc},#{task.taskStatus},#{task.lifeCycleState},#{task.jobId},#{task.execOrder})
+            </foreach>
+    </insert>
+
+    <select id="queryByCondition" resultMap="AsyncTaskDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_task
+        WHERE
+        async_task.life_cycle_state != 'DELETED'
+        <if test="jobId!=null and jobId gt 0">
+            AND async_task.job_id = #{jobId}
+        </if>
+        <if test="offset!=null and offset gt 0">
+            LIMIT #{offset},#{pageSize}
+        </if>
+    </select>
+
+    <select id="queryCountByCondition" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        async_task
+        WHERE
+        async_task.life_cycle_state != 'DELETED'
+        <if test="jobId!=null">
+            AND async_task.job_id = #{jobId}
+        </if>
+    </select>
+
+    <select id="queryListByJobId" resultMap="AsyncTaskDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_task
+        WHERE
+        async_task.life_cycle_state != 'DELETED'
+        AND
+        async_task.job_id = #{jobId}
+        ORDER BY async_task.exec_order ASC
+    </select>
+
+    <select id="queryTaskByName" resultMap="AsyncTaskDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_task
+        WHERE
+        async_task.life_cycle_state != 'DELETED'
+        AND
+        async_task.task_name = #{taskName}
+        LIMIT 1
+    </select>
+
+    <select id="queryByTaskId" resultMap="AsyncTaskDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_task
+        WHERE
+        async_task.life_cycle_state != 'DELETED'
+        AND
+        async_task.id = #{taskId}
+        LIMIT 1
+    </select>
+
+    <select id="queryByTaskIds" resultMap="AsyncTaskDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_task
+        WHERE
+        async_task.life_cycle_state != 'DELETED'
+        AND
+        <if test="ids != null and ids.size > 0">
+            async_task.id in
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <update id="deleteByTaskId">
+        UPDATE
+            async_task
+        SET async_task.life_cycle_state = 'DELETED'
+        WHERE async_task.life_cycle_state != 'DELETED'
+          AND async_task.id = #{taskId}
+    </update>
+
+    <update id="deleteByJobId">
+        UPDATE
+            async_task
+        SET async_task.life_cycle_state = 'DELETED'
+        WHERE async_task.life_cycle_state != 'DELETED'
+          AND async_task.job_id = #{jobId}
+    </update>
+
+
+    <update id="resetTaskStatusToWaitStartBatch">
+        UPDATE
+        async_task
+        SET
+        async_task.task_status = 'WAIT_START'
+        WHERE
+        <if test="ids != null and ids.size > 0">
+            async_task.job_id in
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+</mapper>

@@ -1,0 +1,30 @@
+.cache
+test-work
+bin
+/out/
+.DS_Store
+_book
+dependency-reduced-pom.xml
+.gradle
+/.gradle/
+
+# Editor directories and files
+.settings
+target
+build
+build/*
+.classpath
+.project
+*.iml
+*/*.iml
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+pom.xml.versionsBackup
+
+# codes
+gen/
+logs/*

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_TEMP" value="${user.home}/logs/cronx"/>
+    <property name="LOG_FILE" value="${user.home}/logs/cronx/console.log}"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <!-- disable logback configuration info printing -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+
+    <appender name="PROJECT" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <Key>app.mainModule</Key>
+            <DefaultValue>console</DefaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE-${app.mainModule}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <!-- reference:https://stackoverflow.com/questions/40141053/how-to-configure-spring-boot-logback-rollingfileappender-and-have-actuator-logfi-->
+                <File>logs/cronx/${app.mainModule}.log</File>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <!-- rollover daily -->
+                    <fileNamePattern>logs/cronx/%d{yyyy-MM-dd}/${app.mainModule}-%d{yyyy-MM-dd}-%i.log.gz
+                    </fileNamePattern>
+                    <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                        <!-- or whenever the file size reaches 100MB -->
+                        <maxFileSize>512MB</maxFileSize>
+                    </timeBasedFileNamingAndTriggeringPolicy>
+                    <cleanHistoryOnStart>true</cleanHistoryOnStart>
+                    <maxHistory>30</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{56} - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="PROJECT"/>
+    </root>
+</configuration>

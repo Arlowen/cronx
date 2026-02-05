@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.cronx.web.mapper.AsyncJobMapper">
+
+    <resultMap id="AsyncJobDO" type="io.cronx.web.model.entity.AsyncJobDO">
+        <result column="id" property="id"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="job_name" property="jobName"/>
+        <result column="job_desc" property="jobDesc"/>
+        <result column="job_status" property="jobStatus"
+                javaType="io.cronx.async.task.framework.constant.AsyncJobStatus"/>
+        <result column="life_cycle_state" property="lifeCycleState"
+                javaType="io.cronx.web.model.enumeration.LifeCycleState"/>
+        <result column="start_time" property="startTime"/>
+        <result column="finish_time" property="finishTime"/>
+        <result column="next_start_time" property="nextStartTime"/>
+        <result column="is_timing" property="isTiming"/>
+    </resultMap>
+
+    <sql id="allColumn">
+        async_job.id id,
+        async_job.gmt_create gmt_create,
+        async_job.gmt_modified gmt_modified,
+        async_job.job_name job_name,
+        async_job.job_desc job_desc,
+        async_job.job_status job_status,
+        async_job.life_cycle_state life_cycle_state,
+        async_job.start_time start_time,
+        async_job.finish_time finish_time,
+        async_job.next_start_time next_start_time,
+        async_job.is_timing is_timing
+    </sql>
+
+    <select id="queryJobByName" resultMap="AsyncJobDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_job
+        WHERE
+        async_job.life_cycle_state != 'DELETED'
+        AND
+        async_job.job_name = #{jobName}
+        LIMIT 1
+    </select>
+
+    <select id="queryJobById" resultMap="AsyncJobDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_job
+        WHERE
+        async_job.life_cycle_state != 'DELETED'
+        AND
+        async_job.id = #{jobId}
+        LIMIT 1
+    </select>
+
+
+    <select id="queryByCondition" resultMap="AsyncJobDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_job
+        WHERE
+        async_job.life_cycle_state != 'DELETED'
+        <if test="offset!=null and offset gt 0">
+            LIMIT #{offset},#{pageSize}
+        </if>
+    </select>
+
+    <select id="queryCountByCondition" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM async_job
+        WHERE async_job.life_cycle_state != 'DELETED'
+    </select>
+
+    <update id="deleteByJobId">
+        UPDATE
+            async_job
+        SET async_job.life_cycle_state = 'DELETED'
+        WHERE async_job.life_cycle_state != 'DELETED'
+          AND async_job.id = #{jobId}
+    </update>
+
+    <select id="queryAsyncJobsByStatus" resultMap="AsyncJobDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_job
+        where async_job.job_status =
+        #{jobStatus,javaType=io.cronx.async.task.framework.constant.AsyncJobStatus}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE
+            async_job
+        SET async_job.job_status = #{status}
+        where id = #{asyncJobId}
+    </update>
+
+    <update id="updateStatusBatch">
+        UPDATE
+        async_job
+        SET async_job.job_status =
+        #{jobStatus,javaType=io.cronx.async.task.framework.constant.AsyncJobStatus}
+        WHERE
+        <if test="ids != null and ids.size > 0">
+            async_job.id in
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+
+    <select id="queryNeedStartTimerAsyncJobs" resultMap="AsyncJobDO">
+        SELECT
+        <include refid="allColumn"/>
+        FROM
+        async_job
+        <![CDATA[
+        WHERE async_job.job_status = 'FINISHED'
+          and async_job.is_timing = 1
+          and async_job.next_start_time < #{currentTs};
+        ]]>
+    </select>
+
+    <update id="startTimerFinishedJobs">
+        UPDATE
+            async_job
+        SET async_job.job_status = 'WAIT_START'
+        <![CDATA[
+        WHERE async_job.job_status = 'FINISHED'
+          and async_job.is_timing = 1
+          and async_job.next_start_time < #{currentTs};
+        ]]>
+    </update>
+</mapper>

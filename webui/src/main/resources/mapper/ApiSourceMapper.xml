@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.cronx.web.mapper.ApiSourceMapper">
+
+    <resultMap id="apiSourceDO" type="io.cronx.web.model.entity.ApiSourceDO">
+        <result column="id" property="id"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="host" property="host"/>
+    </resultMap>
+
+    <sql id="allColumn">
+        api_source.id id,
+        api_source.gmt_create gmt_create,
+        api_source.gmt_modified gmt_modified,
+        api_source.host host
+    </sql>
+
+    <select id="queryByCondition" resultMap="apiSourceDO">
+        SELECT
+            <include refid="allColumn"/>
+        FROM
+            api_source
+        WHERE
+            1=1
+        <if test="offset!=null and offset gt 0">
+            LIMIT #{offset},#{pageSize}
+        </if>
+    </select>
+
+    <select id="queryCountByCondition" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            api_source
+        WHERE
+            1=1
+    </select>
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.cronx.web.mapper.OptUserMapper">
+
+    <resultMap id="optUserDO" type="io.cronx.web.model.entity.OptUserDO">
+        <result column="id" property="id"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="last_try_login_time" property="lastTryLoginTime"/>
+        <result column="login_fail_count" property="loginFailCount"/>
+        <result column="login_locked" property="loginLocked"/>
+    </resultMap>
+
+    <sql id="allColumn">
+        opt_user.id id,
+        opt_user.gmt_create gmt_create,
+        opt_user.gmt_modified gmt_modified,
+        opt_user.username username,
+        opt_user.password password,
+        opt_user.last_try_login_time last_try_login_time,
+        opt_user.login_fail_count login_fail_count,
+        opt_user.login_locked login_locked
+    </sql>
+
+    <select id="queryByAccountName" resultMap="optUserDO">
+        SELECT
+            <include refid="allColumn"/>
+        FROM
+            opt_user
+        WHERE
+            opt_user.username=#{accountName}
+    </select>
+
+
+    <update id="updateLoginLimitInfo">
+        UPDATE
+            opt_user
+        SET
+            opt_user.last_try_login_time = #{lastTryLoginTime},
+            opt_user.login_fail_count    = #{loginFailCount},
+            opt_user.login_locked        = #{loginLocked}
+        WHERE
+            opt_user.id = #{id}
+    </update>
+
+</mapper>

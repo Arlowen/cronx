@@ -1,0 +1,72 @@
+server:
+  port: 8555
+  servlet:
+    session:
+      cookie:
+        http-only: true
+spring:
+  application:
+    name: cronx-application
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/cronx?serverTimezone=Asia/Shanghai&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=30000&connectTimeout=3000
+    username: origin
+    password: 123258
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  mail:
+    host: smtp.mxhichina.com
+    port: 465
+    username: alert@cronx.io
+    password: 23zxs3QSnJsdfTQi
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+        transport:
+          protocol: smtps
+  flyway:
+    cronx:
+      enabled: true
+      baseline-on-migrate: true
+      baseline-description: << CronX >>
+      sql-migration-prefix: V
+      sql-migration-separator: __
+      sql-migration-suffixes: .sql
+      locations: classpath:migration
+      table: cronx_schema_history
+
+logging:
+  level:
+    root: info
+    org.springframework.boot.autoconfigure: ERROR
+  #    io.cronx.web.mapper: debug
+  file:
+    max-size: 512MB
+  config: classpath:logback.xml
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+knife4j:
+  enable: true
+  production: false
+jwt:
+  secret: jwt67849ad4s118123ycgve45uk12ghthvli4u510f99z35hec2hegre876n1
+
+cronx:
+  enable:
+    security: true
+  login:
+    retry:
+      max-count: 3
+    reset:
+      period:
+        minuetes: 1
+  config:
+    i18n:
+      default_locale: zh_CN
