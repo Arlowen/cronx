@@ -21,6 +21,7 @@ spring:
     username: alert@cronx.io
     password: 23zxs3QSnJsdfTQi
     properties:
+      from: "cronx"
       mail:
         smtp:
           auth: true

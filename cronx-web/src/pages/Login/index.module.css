@@ -1,0 +1,218 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 55%),
+    radial-gradient(circle at 30% 20%, rgba(34, 197, 94, 0.12), transparent 45%),
+    linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 45%, #ffffff 100%);
+}
+
+.shell {
+  width: min(1080px, 100%);
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+}
+
+.brandPanel {
+  padding: 40px;
+  border-radius: 24px;
+  background: rgba(3, 105, 161, 0.08);
+  border: 1px solid rgba(3, 105, 161, 0.18);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 420px;
+}
+
+.brandMark {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 12px;
+  color: var(--color-primary);
+  margin-bottom: 16px;
+}
+
+.brandTitle {
+  font-size: 36px;
+  margin: 0 0 12px;
+  color: var(--color-text);
+  font-family: var(--font-mono);
+}
+
+.brandSubtitle {
+  margin: 0 0 20px;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.featureList {
+  margin: 0 0 20px;
+  padding-left: 18px;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  background: rgba(14, 165, 233, 0.12);
+  color: #075985;
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.card {
+  padding: 36px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: var(--shadow-strong);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 420px;
+  animation: rise 420ms ease-out;
+}
+
+.cardHeader {
+  margin-bottom: 24px;
+}
+
+.cardEyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-primary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.cardTitle {
+  margin: 0 0 8px;
+  font-size: 28px;
+  color: var(--color-text);
+}
+
+.cardHint {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.formItem label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.formItem input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #f8fafc;
+  color: var(--color-text);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.formItem input:focus {
+  border-color: rgba(14, 165, 233, 0.6);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16);
+  outline: none;
+}
+
+.error {
+  color: #b91c1c;
+  background: rgba(254, 226, 226, 0.8);
+  border: 1px solid rgba(252, 165, 165, 0.7);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  box-shadow: 0 12px 20px rgba(14, 165, 233, 0.25);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 24px rgba(14, 165, 233, 0.3);
+}
+
+.button:disabled {
+  background: #cbd5f5;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.helper {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(8px);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 960px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .brandPanel,
+  .card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .brandPanel,
+  .card {
+    padding: 28px 22px;
+  }
+
+  .brandTitle {
+    font-size: 28px;
+  }
+
+  .cardTitle {
+    font-size: 24px;
+  }
+}
